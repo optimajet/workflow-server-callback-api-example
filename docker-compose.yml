@@ -1,0 +1,12 @@
+services:
+  wfs-callback-api:
+    container_name: wfs-callback-api
+    hostname: wfs-callback-api
+    build:
+      context: ./
+      dockerfile: ./docker-files/Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_URLS=http://*:5001/
+      - ASPNETCORE_ALLOWEDHOSTS=*
