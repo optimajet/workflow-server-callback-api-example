@@ -39,7 +39,7 @@ public class ApiController : ControllerBase
     {
         await _actionProvider.ExecuteAction(request.Name, request.Parameter, request.ProcessInstance);
         
-        return Ok();
+        return Ok(ApiResponse.Ok());
     }
 
     [HttpGet]
