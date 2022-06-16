@@ -6,7 +6,7 @@ public class ParameterProvider
     {
         Parameters = new Dictionary<string, object?>
         {
-            
+            ["MyParameter"] = string.Empty,
         };
     }
 
