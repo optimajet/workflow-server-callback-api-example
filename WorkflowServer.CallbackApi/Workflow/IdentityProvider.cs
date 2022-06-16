@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using WorkflowServer.CallbackApi.Models;
+using WorkflowServer.CallbackApi.VacationRequest;
 
 namespace WorkflowServer.CallbackApi.Workflow;
 
@@ -9,8 +10,20 @@ public class IdentityProvider
     {
         Rules = new ReadOnlyDictionary<string, Rule>(new Dictionary<string, Rule>
         {
-            ["MyRule"] = new(MyRuleCheck, MyRuleGet)
+            ["MyRule"] = new(MyRuleCheck, MyRuleGet),
+            ["InRole"] = new(InRoleCheck, InRoleGet),
+            ["isUser"] = new(IsUserCheck, IsUserGet),
         });
+
+        _users = new List<User>
+        {
+            new("1", "John", "User"),
+            new("2", "Margo", "User"),
+            new("3", "Maria", "User", "Accountant"),
+            new("4", "Mark", "User"),
+            new("5", "Max", "User"),
+            new("6", "Silviya", "User", "Big Boss"),
+        };
     }
 
     public ReadOnlyDictionary<string, Rule> Rules { get; }
@@ -32,4 +45,30 @@ public class IdentityProvider
     {
         return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
     }
+    
+    public Task<bool> InRoleCheck(string identityId, string parameter, ProcessInstance processInstance)
+    {
+        var result = _users.Any(u => u.Id == identityId && u.Roles.Contains(parameter));
+        return Task.FromResult(result);
+    }
+    
+    public Task<IEnumerable<string>> InRoleGet(string parameter, ProcessInstance processInstance)
+    {
+        var result = _users.Where(u => u.Roles.Contains(parameter)).Select(u => u.Name);
+        return Task.FromResult(result);
+    }
+    
+    public Task<bool> IsUserCheck(string identityId, string parameter, ProcessInstance processInstance)
+    {
+        var result = _users.Any(u => u.Id == identityId && u.Name == parameter);
+        return Task.FromResult(result);
+    }
+    
+    public Task<IEnumerable<string>> IsUserGet(string parameter, ProcessInstance processInstance)
+    {
+        var result = _users.Where(u => u.Name == parameter).Select(u => u.Name);
+        return Task.FromResult(result);
+    }
+
+    private readonly List<User> _users;
 }
