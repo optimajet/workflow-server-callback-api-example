@@ -7,7 +7,7 @@ using WorkflowServer.CallbackApi.Workflow;
 namespace WorkflowServer.CallbackApi.Controllers;
 
 /// <summary>
-/// This controller implements all possible requests from Callback API of WFS 3.0.0.
+/// This controller implements all possible requests from Callback API of Workflow Server 3.0.0.
 /// Callback API allows hosting your code of Actions, Conditions or Rules on third-party servers.
 /// Callback server should be connected in the admin panel on the Callback API page.
 /// More details on the  <see href="https://workflowserver.io/documentation/callback-api">workflowserver.io</see>
@@ -123,7 +123,7 @@ public class ApiController : ControllerBase
     #region Remote Scheme Generation
 
     /// <summary>
-    /// Workflow Engine supports scheme generation. If you include this method, then,
+    /// Workflow Engine (is a part of WorkflowServer) supports scheme generation. If you include this method, then,
     /// to initialize a new scheme, the Workflow Server calls it on all the connected
     /// servers with the settings containing the address of this method.
     /// </summary>
