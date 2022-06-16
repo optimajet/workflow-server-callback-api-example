@@ -106,6 +106,9 @@ public class ApiController : ControllerBase
     [HttpPost]
     public Task<IActionResult> ProcessStatusChanged(StatusChangedRequest request)
     {
+        _logger.LogInformation("Process status changed from {OldStatus} to {NewStatus}", 
+            request.OldStatus, request.NewStatus);
+        
         //Your event actions
         
         return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok()));
@@ -114,6 +117,9 @@ public class ApiController : ControllerBase
     [HttpPost]
     public Task<IActionResult> ProcessActivityChanged(ActivityChangedRequest request)
     {
+        _logger.LogInformation("Process activity changed from {PreviousActivityName} to {CurrentActivityName}", 
+            request.PreviousActivityName, request.CurrentActivityName);
+        
         //Your event actions
         
         return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok()));
