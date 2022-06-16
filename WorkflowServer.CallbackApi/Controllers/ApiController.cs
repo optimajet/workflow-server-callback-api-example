@@ -1,6 +1,8 @@
 using System.Text;
+using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using WorkflowServer.CallbackApi.Models;
+using WorkflowServer.CallbackApi.Workflow;
 
 namespace WorkflowServer.CallbackApi.Controllers;
 
@@ -17,137 +19,84 @@ public class ApiController : ControllerBase
     public ApiController(ILogger<ApiController> logger)
     {
         _logger = logger;
+
+        _actionProvider = new ActionProvider();
+        _conditionProvider = new ConditionProvider();
+        _identityProvider = new IdentityProvider();
+        _parameterProvider = new ParameterProvider();
     }
 
     #region Actions & Conditions Execution
 
     [HttpGet]
-    public async Task<IActionResult> GetActions(string schemeCode, string token)
+    public Task<IActionResult> GetActions(string schemeCode, string token)
     {
-        // var actions = new List<string> { "Action4", "Action5", "Action6" };
-        // var res = new CallBackResponse { success = true, data = actions };
-        //
-        // return Ok(res);
-
-        return Ok(ApiResponse.Ok(new List<string>()));
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_actionProvider.ActionNames)));
     }
 
     [HttpPost]
     public async Task<IActionResult> ExecuteAction(InstanceRequest request)
     {
-        // return Ok(new CallBackResponse());
+        await _actionProvider.ExecuteAction(request.Name, request.Parameter, request.ProcessInstance);
         
-        return Ok(ApiResponse.Ok());
+        return Ok();
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetConditions(string schemeCode, string token)
+    public Task<IActionResult> GetConditions(string schemeCode, string token)
     {
-        // var conditions = new List<string> { "IsTeamleader", "IsManager", "IsUser" };
-        // var res = new CallBackResponse { success = true, data = conditions };
-        // return Ok(res);
-        
-        return Ok(ApiResponse.Ok(new List<string>()));
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_conditionProvider.ConditionNames)));
     }
 
     [HttpPost]
     public async Task<IActionResult> ExecuteCondition(InstanceRequest request)
     {
-        // var processInstance = JsonConvert.DeserializeObject<dynamic>(wfQuery.processInstance.ToString());
-        // string creatorId = processInstance.ProcessParameters.creatorIdentity;
-        // if (wfQuery.name == "IsUser")
-        // {
-        //     var isInRole = IsInRole(creatorId, "user");
-        //     if (isInRole)
-        //     {
-        //         return Ok(new CallBackResponse { success = true, data = true });
-        //     }
-        //     else
-        //     {
-        //         return Ok(new CallBackResponse { success = true, data = false });
-        //     }
-        // }
-        // else if (wfQuery.name == "IsTeamleader")
-        // {
-        //     var isInRole = IsInRole(creatorId, "teamleader");
-        //     if (isInRole)
-        //     {
-        //         return Ok(new CallBackResponse { success = true, data = true });
-        //     }
-        //     else
-        //     {
-        //         return Ok(new CallBackResponse { success = true, data = false });
-        //     }
-        // }
-        // else if (wfQuery.name == "IsManager")
-        // {
-        //     var isInRole = IsInRole(creatorId, "manager");
-        //     if (isInRole)
-        //     {
-        //         return Ok(new CallBackResponse { success = true, data = true });
-        //     }
-        //     else
-        //     {
-        //         return Ok(new CallBackResponse { success = true, data = false });
-        //     }
-        // }
-        // else
-        // {
-        //     return Ok(new CallBackResponse { success = true, data = false });
-        // }
+        var result = await _conditionProvider.ExecuteCondition(request.Name, request.Parameter, request.ProcessInstance);
         
-        return Ok(ApiResponse.Ok(true));
+        return Ok(ApiResponse.Ok(result));
     }
+
+    private readonly ActionProvider _actionProvider;
+    private readonly ConditionProvider _conditionProvider;
 
     #endregion
 
     #region Authorization Rules Execution
 
     [HttpGet]
-    public async Task<IActionResult> GetRules(string schemeCode, string token)
+    public Task<IActionResult> GetRules(string schemeCode, string token)
     {
-        // var rules = new List<string> { "CheckRoleCallBack" };
-        // return Ok(new CallBackResponse { success = true, data = rules });
-        
-        return Ok(ApiResponse.Ok(new List<string>()));
+        return Task.FromResult<IActionResult>(Ok(_identityProvider.RuleNames));
     }
 
     [HttpPost]
     public async Task<IActionResult> CheckRule(CheckRuleRequest request)
     {
-        // if (wfQueryRule.name == "CheckRoleCallBack")
-        // {
-        //     string? roleName = wfQueryRule.parameter;
-        //     string? userId = wfQueryRule.identityId;
-        //     var res = IsInRole(userId, roleName);
-        //     return Ok(new CallBackResponse { success = true, data = res });
-        // }
-        //
-        // return Ok(new CallBackResponse { success = true, data = false });
-        
-        return Ok(ApiResponse.Ok(true));
+        var result = await _identityProvider.RuleCheck(request.Name, request.IdentityId, request.Parameter, request.ProcessInstance);
+        return Ok(ApiResponse.Ok(result));
     }
 
     [HttpPost]
     public async Task<IActionResult> GetIdentities(InstanceRequest request)
     {
-        // var temp = JsonConvert.DeserializeObject<dynamic>(wfQuery.processInstance.ToString());
-        // //var id = temp.Id;
-        //
-        // var users = UsersInRole(wfQuery.parameter);
-        // return Ok(new CallBackResponse { success = true, data = users });
-        
-        return Ok(ApiResponse.Ok(new List<string>()));
+        var result = await _identityProvider.RuleGet(request.Name, request.Parameter, request.ProcessInstance);
+        return Ok(ApiResponse.Ok(result));
     }
+
+    private readonly IdentityProvider _identityProvider;
 
     #endregion
 
     #region Remote Scheme Generation
 
     [HttpPost]
-    public async Task<IActionResult> Generate(GenerateRequest request)
+    public Task<IActionResult> Generate(GenerateRequest request)
     {
-        return Ok("<xml/>");
+        XmlDocument xml = new XmlDocument();
+        
+        //Your code
+        
+        return Task.FromResult<IActionResult>(Ok(xml.OuterXml));
     }
 
     #endregion
@@ -155,24 +104,27 @@ public class ApiController : ControllerBase
     #region Event Handlers
 
     [HttpPost]
-    public async Task<IActionResult> ProcessStatusChanged(StatusChangedRequest request)
+    public Task<IActionResult> ProcessStatusChanged(StatusChangedRequest request)
     {
-        return Ok(ApiResponse.Ok());
-    }
-    
-    [HttpPost]
-    public async Task<IActionResult> ProcessActivityChanged(ActivityChangedRequest request)
-    {
-        return Ok(ApiResponse.Ok());
-    }
-    
-    [HttpPost]
-    public async Task<IActionResult> ProcessLog(LogRequest request)
-    {
-        using var sr = new StreamReader(Request.Body);
-        var txt = await sr.ReadToEndAsync();
+        //Your event actions
         
-        return Ok(ApiResponse.Ok());
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok()));
+    }
+    
+    [HttpPost]
+    public Task<IActionResult> ProcessActivityChanged(ActivityChangedRequest request)
+    {
+        //Your event actions
+        
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok()));
+    }
+    
+    [HttpPost]
+    public Task<IActionResult> ProcessLog(LogRequest request)
+    {
+        //Your event actions
+        
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok()));
     }
 
     #endregion
@@ -180,22 +132,26 @@ public class ApiController : ControllerBase
     #region Parameters Providing 
     
     [HttpGet]
-    public async Task<IActionResult> GetParameterNames(string schemeCode, string token)
+    public Task<IActionResult> GetParameterNames(string schemeCode, string token)
     {
-        return Ok(ApiResponse.Ok(new List<string>()));
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_parameterProvider.GetNames)));
     }
     
     [HttpPost]
-    public async Task<IActionResult> GetParameter(ParameterRequest request)
+    public Task<IActionResult> GetParameter(ParameterRequest request)
     {
-        return Ok(ApiResponse.Ok(new()));
+        var result = _parameterProvider.GetParameter(request.Name);
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(result)));
     }
     
     [HttpPost]
-    public async Task<IActionResult> SetParameter(ParameterRequest request)
+    public Task<IActionResult> SetParameter(ParameterRequest request)
     {
-        return Ok(ApiResponse.Ok());
+        _parameterProvider.SetParameter(request.Name, request.Value);
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok()));
     }
+
+    private readonly ParameterProvider _parameterProvider;
 
     #endregion
 
