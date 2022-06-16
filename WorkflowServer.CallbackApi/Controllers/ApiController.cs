@@ -66,7 +66,7 @@ public class ApiController : ControllerBase
     [HttpGet]
     public Task<IActionResult> GetRules(string schemeCode, string token)
     {
-        return Task.FromResult<IActionResult>(Ok(_identityProvider.RuleNames));
+        return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_identityProvider.RuleNames)));
     }
 
     [HttpPost]
