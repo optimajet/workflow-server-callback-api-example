@@ -2,11 +2,11 @@
 
 public class CheckRuleRequest : InstanceRequest
 {
-    public CheckRuleRequest(string name, string parameter, ProcessInstance processInstance, string identityId, string? token = null) : 
+    public CheckRuleRequest(string name, string parameter, ProcessInstance processInstance, string? identityId = null, string? token = null) : 
         base(name, parameter, processInstance, token)
     {
         IdentityId = identityId;
     }
     
-    public string IdentityId { get; }
+    public string? IdentityId { get; }
 }
