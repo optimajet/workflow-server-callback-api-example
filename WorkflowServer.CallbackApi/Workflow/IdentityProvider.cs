@@ -17,12 +17,12 @@ public class IdentityProvider
 
         _users = new List<User>
         {
-            new("1", "John", "User"),
-            new("2", "Margo", "User"),
-            new("3", "Maria", "User", "Accountant"),
-            new("4", "Mark", "User"),
-            new("5", "Max", "User"),
-            new("6", "Silviya", "User", "Big Boss"),
+            new("John", "John", "User"),
+            new("Margo", "Margo", "User"),
+            new("Maria", "Maria", "User", "Accountant"),
+            new("Mark", "Mark", "User"),
+            new("Max", "Max", "User"),
+            new("Silviya", "Silviya", "User", "Big Boss"),
         };
     }
 
