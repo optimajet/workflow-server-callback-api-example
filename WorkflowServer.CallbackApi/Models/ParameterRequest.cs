@@ -2,8 +2,8 @@
 
 public class ParameterRequest : ProcessRequest
 {
-    public ParameterRequest(Guid processId, string schemeCode, ProcessInstance processInstance, string token, string name, 
-        object? value = null) 
+    public ParameterRequest(Guid processId, string schemeCode, ProcessInstance processInstance, string name, 
+        object? value = null, string? token = null) 
         : base(processId, schemeCode, processInstance, token)
     {
         Name = name;

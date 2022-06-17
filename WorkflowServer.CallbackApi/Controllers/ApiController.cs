@@ -37,7 +37,7 @@ public class ApiController : ControllerBase
     /// name in response to the request for the list of actions.
     /// </summary>
     [HttpGet]
-    public Task<IActionResult> GetActions(string schemeCode, string token)
+    public Task<IActionResult> GetActions(string schemeCode, string? token = null)
     {
         return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_actionProvider.ActionNames)));
     }
@@ -60,7 +60,7 @@ public class ApiController : ControllerBase
     /// this name in response to the request for the list of conditions.
     /// </summary>
     [HttpGet]
-    public Task<IActionResult> GetConditions(string schemeCode, string token)
+    public Task<IActionResult> GetConditions(string schemeCode, string? token = null)
     {
         return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_conditionProvider.ConditionNames)));
     }
@@ -91,7 +91,7 @@ public class ApiController : ControllerBase
     /// this name in response to the request for the list of Authorization Rules.
     /// </summary>
     [HttpGet]
-    public Task<IActionResult> GetRules(string schemeCode, string token)
+    public Task<IActionResult> GetRules(string schemeCode, string? token = null)
     {
         return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_identityProvider.RuleNames)));
     }
@@ -189,7 +189,7 @@ public class ApiController : ControllerBase
     /// Used to get parameters list.
     /// </summary>
     [HttpGet]
-    public Task<IActionResult> GetParameterNames(string schemeCode, string token)
+    public Task<IActionResult> GetParameterNames(string schemeCode, string? token = null)
     {
         return Task.FromResult<IActionResult>(Ok(ApiResponse.Ok(_parameterProvider.GetNames)));
     }

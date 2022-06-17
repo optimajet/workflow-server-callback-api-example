@@ -2,7 +2,7 @@
 
 public class InstanceRequest
 {
-    public InstanceRequest(string name, string parameter, string token, ProcessInstance processInstance)
+    public InstanceRequest(string name, string parameter, ProcessInstance processInstance, string? token = null)
     {
         Name = name;
         Parameter = parameter;
@@ -13,5 +13,5 @@ public class InstanceRequest
     public string Name { get; }
     public string Parameter { get; }
     public ProcessInstance ProcessInstance { get; }
-    public string Token { get; }
+    public string? Token { get; }
 }
